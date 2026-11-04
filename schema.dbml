@@ -6,17 +6,17 @@ Table departments {
 
 Table instructors {
   id integer [pk, increment]
-  FullName varchar [not null]
+  full_name varchar [not null]
   email varchar [not null, unique]
   department_id integer [not null]
   hired_at date
 }
 
 Table students {
-  id integer [increment]
+  id integer [pk, increment]
   full_name varchar [not null]
-  email varchar [not null]
-  date_of_birth varchar
+  email varchar [not null, unique]
+  date_of_birth date
   created_at timestamp [default: `now()`]
 }
 
@@ -24,22 +24,25 @@ Table courses {
   id integer [pk, increment]
   code varchar [not null, unique]
   title varchar [not null]
-  credit_hours varchar
+  credit_hours integer
   department_id integer [not null]
-  instructor_id integer
-  instructor_name varchar
-  student_id integer
+  instructor_id integer [not null]
 }
 
 Table enrollments {
   id integer [pk, increment]
-  student_id varchar [not null]
+  student_id integer [not null]
   course_id integer [not null]
   enrolled_at timestamp [default: `now()`]
   grade decimal(5,2)
+
+  indexes {
+    (student_id, course_id) [unique]
+  }
 }
 
+Ref: instructors.department_id > departments.id
+Ref: courses.department_id > departments.id
 Ref: courses.instructor_id > instructors.id
-Ref: departments.id > courses.department_id
 Ref: enrollments.student_id > students.id
-Ref: enrollments.course_id > courses.course_id
+Ref: enrollments.course_id > courses.id
