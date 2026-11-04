@@ -84,7 +84,9 @@ COMMENT ON TABLE "classrooms" IS 'Stores classroom locations and seating capacit
 
 COMMENT ON TABLE "course_meetings" IS 'Stores scheduled course meetings, their classrooms, days and times';
 
-ALTER TABLE "instructors" ADD FOREIGN KEY ("department_id") REFERENCES "departments" ("id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "departments"
+ADD FOREIGN KEY ("head_instructor_id")
+REFERENCES "instructors" ("id") DEFERRABLE INITIALLY IMMEDIATE; 
 
 ALTER TABLE "courses" ADD FOREIGN KEY ("department_id") REFERENCES "departments" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 
