@@ -1,7 +1,24 @@
 
+Enum enrollment_status {
+  active
+  dropped
+  completed
+}
+
+Enum weekdays {
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
+}
+
 Table departments {
   id integer [pk, increment]
   name varchar [not null, unique]
+  head_instructor_id integer [unique]
 }
 
 Table instructors {
@@ -35,10 +52,36 @@ Table enrollments {
   course_id integer [not null]
   enrolled_at timestamp [default: `now()`]
   grade decimal(5,2)
+  status enrollment_status [not null, default: 'active']
 
   indexes {
     (student_id, course_id) [unique]
   }
+}
+
+Table course_prerequisites [note: 'Stores prerequisite relationships between courses'] {
+  course_id integer [not null]
+  prerequisite_course_id integer [not null]
+
+  indexes {
+    (course_id, prerequisite_course_id) [pk]
+  }
+}
+
+Table classrooms [note: 'Stores classroom locations and seating capacity'] {
+  id integer [pk, increment]
+  building varchar [not null]
+  room_number varchar [not null]
+  capacity integer [not null]
+}
+
+Table course_meetings [note: 'Stores scheduled course meetings, their classrooms, days and times'] {
+  id integer [pk, increment]
+  course_id integer [not null]
+  classroom_id integer [not null]
+  day_of_week weekdays [not null]
+  start_time time [not null]
+  end_time time [not null]
 }
 
 Ref: instructors.department_id > departments.id
@@ -46,3 +89,12 @@ Ref: courses.department_id > departments.id
 Ref: courses.instructor_id > instructors.id
 Ref: enrollments.student_id > students.id
 Ref: enrollments.course_id > courses.id
+
+Ref: departments.head_instructor_id - instructors.id
+
+Ref: course_prerequisites.course_id > courses.id
+Ref: course_prerequisites.prerequisite_course_id > courses.id
+
+Ref: course_meetings.course_id > courses.id
+Ref: course_meetings.classroom_id > classrooms.id
+
